@@ -77,25 +77,52 @@ class Me:
 
     def __init__(self):
         self.openai = OpenAI()
-        self.name = "Ed Donner"
-        reader = PdfReader("me/linkedin.pdf")
+        self.name = "Oliver Dreger"
+        reader = PdfReader("me/untitled_folder/linkedin.pdf")
         self.linkedin = ""
         for page in reader.pages:
             text = page.extract_text()
             if text:
                 self.linkedin += text
-        with open("me/summary.txt", "r", encoding="utf-8") as f:
+        with open("me/untitled_folder/summary.txt", "r", encoding="utf-8") as f:
             self.summary = f.read()
 
 
-    def handle_tool_call(self, tool_calls):
+    # def handle_tool_call(self, tool_calls):
+    #     results = []
+    #     for tool_call in tool_calls:
+    #         tool_name = tool_call.function.name
+    #         arguments = json.loads(tool_call.function.arguments)
+    #         print(f"Tool called: {tool_name}", flush=True)
+    #         tool = globals().get(tool_name)
+    #         result = tool(**arguments) if tool else {}
+    #         results.append({"role": "tool","content": json.dumps(result),"tool_call_id": tool_call.id})
+    #     return results
+    
+    # 1. Create the tool registry dictionary, mapping tool names to functions.
+    tool_registry = {
+        "record_user_details": record_user_details,
+        "record_unknown_question": record_unknown_question
+    }
+
+    # 2. Update the handler to use this registry.
+    def handle_tool_calls(tool_calls):
         results = []
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             arguments = json.loads(tool_call.function.arguments)
             print(f"Tool called: {tool_name}", flush=True)
-            tool = globals().get(tool_name)
-            result = tool(**arguments) if tool else {}
+            
+            # Look up the function in our secure registry
+            tool_function = tool_registry.get(tool_name)
+            
+            if tool_function:
+                # Call the function if it's found
+                result = tool_function(**arguments)
+            else:
+                # Handle cases where the LLM might call a non-existent tool
+                result = {"error": f"Tool '{tool_name}' not found."}
+                
             results.append({"role": "tool","content": json.dumps(result),"tool_call_id": tool_call.id})
         return results
     

@@ -183,5 +183,6 @@ cython_debug/
 6_mcp/memory/*.db
 .venv.txt
 .env.txt
-1_foundations/me/untitled folder/Oliver_LinkedIn.pdf
-/1_foundations/me/untitled folder
+1_foundations/me/untitled_folder/linkedin.pdf
+1_foundations/me/untitled_folder/summary.txt
+/1_foundations/me/untitled_folder
