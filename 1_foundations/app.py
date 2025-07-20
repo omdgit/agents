@@ -106,7 +106,7 @@ class Me:
     }
 
     # 2. Update the handler to use this registry.
-    def handle_tool_calls(tool_calls):
+    def handle_tool_calls(self, tool_calls):
         results = []
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
@@ -114,7 +114,7 @@ class Me:
             print(f"Tool called: {tool_name}", flush=True)
             
             # Look up the function in our secure registry
-            tool_function = tool_registry.get(tool_name)
+            tool_function = self.tool_registry.get(tool_name)
             
             if tool_function:
                 # Call the function if it's found
@@ -147,7 +147,7 @@ If the user is engaging in discussion, try to steer them towards getting in touc
             if response.choices[0].finish_reason=="tool_calls":
                 message = response.choices[0].message
                 tool_calls = message.tool_calls
-                results = self.handle_tool_call(tool_calls)
+                results = self.handle_tool_calls(tool_calls)
                 messages.append(message)
                 messages.extend(results)
             else:
